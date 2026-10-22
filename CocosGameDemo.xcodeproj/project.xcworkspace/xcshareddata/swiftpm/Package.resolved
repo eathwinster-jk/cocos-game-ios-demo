@@ -1,0 +1,15 @@
+{
+  "originHash" : "184a121bd83ca15c906af864c4e870572c26ac27f91cd7ee968b601d0d927d2f",
+  "pins" : [
+    {
+      "identity" : "cocos-game-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eathwinster-jk/cocos-game-ios-sdk",
+      "state" : {
+        "revision" : "0af8c4a9fcb2279e93d7967da74a5640707e9017",
+        "version" : "0.1.9"
+      }
+    }
+  ],
+  "version" : 3
+}
