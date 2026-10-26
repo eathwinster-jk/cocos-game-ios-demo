@@ -248,7 +248,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.10;
+				MARKETING_VERSION = 0.1.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eath.cocosgamesdkdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -335,7 +335,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.10;
+				MARKETING_VERSION = 0.1.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eath.cocosgamesdkdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -373,7 +373,7 @@
 			repositoryURL = "https://github.com/eathwinster-jk/cocos-game-ios-sdk";
 			requirement = {
 				kind = exactVersion;
-				version = 0.1.10;
+				version = 0.1.11;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

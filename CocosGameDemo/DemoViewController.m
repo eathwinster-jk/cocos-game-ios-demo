@@ -9,9 +9,13 @@
 @property(nonatomic, retain) UILabel *stateLabel;
 @property(nonatomic, retain) UIView *gameContainer;
 @property(nonatomic, retain) UIView *playingOperationPanel;
+@property(nonatomic, copy) NSArray<NSLayoutConstraint *> *embeddedConstraints;
+@property(nonatomic, copy) NSArray<NSLayoutConstraint *> *miniConstraints;
 @property(nonatomic) BOOL hasOpened;
 
 @end
+
+static const CGFloat DemoMiniBarMargin = 6;
 
 @implementation DemoViewController
 
@@ -101,12 +105,23 @@
     UIStackView *hostContent = [self createHostContent];
     [self.view addSubview:self.gameContainer];
     [self.view addSubview:hostContent];
-    [NSLayoutConstraint activateConstraints:@[
-        [self.gameContainer.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+    UILayoutGuide *safeArea = self.view.safeAreaLayoutGuide;
+    self.embeddedConstraints = @[
+        [self.gameContainer.topAnchor constraintEqualToAnchor:safeArea.topAnchor],
         [self.gameContainer.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
         [self.gameContainer.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
         [self.gameContainer.heightAnchor constraintEqualToAnchor:self.gameContainer.widthAnchor
                                                       multiplier:211.0 / 375.0],
+    ];
+    self.miniConstraints = @[
+        [self.gameContainer.topAnchor constraintEqualToAnchor:safeArea.topAnchor constant:DemoMiniBarMargin],
+        [self.gameContainer.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:DemoMiniBarMargin],
+        [self.gameContainer.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-DemoMiniBarMargin],
+        [self.gameContainer.heightAnchor constraintEqualToAnchor:self.gameContainer.widthAnchor
+                                                      multiplier:50.0 / 362.0],
+    ];
+    [NSLayoutConstraint activateConstraints:self.embeddedConstraints];
+    [NSLayoutConstraint activateConstraints:@[
         [hostContent.topAnchor constraintEqualToAnchor:self.gameContainer.bottomAnchor constant:8],
         [hostContent.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:14],
         [hostContent.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-14],
@@ -140,6 +155,7 @@
     [stackView addArrangedSubview:[self createLabel:@"大力出奇迹：真假 是不是啊" size:15 color:UIColor.darkGrayColor]];
     [stackView addArrangedSubview:[self createLabel:@"众位球星：楼上角球绝杀，这场进球绝杀" size:15 color:UIColor.darkGrayColor]];
     [stackView addArrangedSubview:[self createLabel:@"球界诸葛：太刺激了" size:15 color:UIColor.systemTealColor]];
+    [stackView addArrangedSubview:[self createMiniModeButton]];
     [stackView addArrangedSubview:[self createStateLabel]];
     return stackView;
 }
@@ -235,6 +251,56 @@
     view.backgroundColor = UIColor.systemTealColor;
     [view.heightAnchor constraintEqualToConstant:2].active = YES;
     return view;
+}
+
+/**
+ * 创建缩小为迷你条按钮，展开由游戏内按钮触发。
+ */
+- (UIButton *)createMiniModeButton {
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
+    button.titleLabel.font = [UIFont systemFontOfSize:15];
+    [button setTitle:@"缩小为迷你条 ›" forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.systemTealColor forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(enterMiniMode) forControlEvents:UIControlEventTouchUpInside];
+    return button;
+}
+
+/**
+ * 进入迷你条。
+ */
+- (void)enterMiniMode {
+    [self applyMiniMode:YES];
+}
+
+/**
+ * 先调整容器为 362:50 横条（或恢复原高度），再通知 SDK；圆角外区域用页面底色。
+ */
+- (void)applyMiniMode:(BOOL)isMiniMode {
+    if (CocosGameSDK.shared.isMiniMode == isMiniMode) return;
+    [NSLayoutConstraint deactivateConstraints:isMiniMode ? self.embeddedConstraints : self.miniConstraints];
+    [NSLayoutConstraint activateConstraints:isMiniMode ? self.miniConstraints : self.embeddedConstraints];
+    self.gameContainer.backgroundColor = isMiniMode ? self.view.backgroundColor : UIColor.blackColor;
+    [self.view layoutIfNeeded];
+    [CocosGameSDK.shared setMiniMode:isMiniMode backgroundColorHex:[self createHexString:self.view.backgroundColor]];
+}
+
+/**
+ * 按当前外观把颜色转为 #RRGGBB。
+ */
+- (NSString *)createHexString:(UIColor *)color {
+    UIColor *resolvedColor = [color resolvedColorWithTraitCollection:self.traitCollection];
+    CGFloat red = 0, green = 0, blue = 0, alpha = 0;
+    if (![resolvedColor getRed:&red green:&green blue:&blue alpha:&alpha]) return nil;
+    return [NSString stringWithFormat:@"#%02X%02X%02X",
+        (int)lround(red * 255), (int)lround(green * 255), (int)lround(blue * 255)];
+}
+
+/**
+ * 玩家点击迷你条展开按钮：恢复内嵌牌桌。
+ */
+- (void)gameSDKDidRequestExpand {
+    [self applyMiniMode:NO];
 }
 
 /**

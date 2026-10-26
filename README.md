@@ -1,6 +1,6 @@
 # Cocos Game iOS Demo
 
-iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换与退出流程。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.1.10。
+iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条与退出流程。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.1.11。
 
 - 接入文档：https://eathwinster-jk.github.io/cocos-game-ios-docs/
 
@@ -29,11 +29,12 @@ xcodebuild -project CocosGameDemo.xcodeproj -scheme CocosGameDemo \
 | --- | --- |
 | `AppDelegate.m` | 创建窗口并初始化 SDK，按 SDK 返回的方向掩码控制旋转 |
 | `MainViewController.m` | 登录页：账号密码登录后创建 `CocosGameSessionConfig` |
-| `DemoViewController.m` | 游戏页：游戏容器、宿主内容示意、SDK 回调处理 |
+| `DemoViewController.m` | 游戏页：游戏容器、宿主内容示意、迷你条切换、SDK 回调处理 |
 | `DemoLoginClient.m` | 测试登录接口，换取 UID、IM UID 与 Token |
 | `DemoConfig.h` | 测试环境地址 |
 
 ## 说明
 
 - 账号密码登录仅用于 Demo，正式客户端必须复用自身登录体系，UID、Token、Scene Type、Scene ID 由宿主传入 SDK。
+- 迷你条：点击「缩小为迷你条」先把容器约束切换为 362:50 横条，再调用 `setMiniMode:YES backgroundColorHex:`；玩家点击迷你条展开按钮时在 `gameSDKDidRequestExpand` 中恢复约束并调用 `setMiniMode:NO`。
 - `DemoConfig.h` 为测试环境地址，接入正式环境时替换为宿主自己的配置。
