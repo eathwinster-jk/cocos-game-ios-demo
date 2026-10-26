@@ -2,6 +2,8 @@
 #import "DemoViewController.h"
 
 #import <CocosGameSDK/CocosGameSDK.h>
+#import "DemoHostBetPanel.h"
+#import "DemoHostRecordsSheet.h"
 
 @interface DemoViewController () <CocosGameSDKDelegate>
 
@@ -9,6 +11,9 @@
 @property(nonatomic, retain) UILabel *stateLabel;
 @property(nonatomic, retain) UIView *gameContainer;
 @property(nonatomic, retain) UIView *playingOperationPanel;
+@property(nonatomic, strong) DemoHostBetPanel *betPanel;
+@property(nonatomic, strong) UILabel *balanceLabel;
+@property(nonatomic, weak) DemoHostRecordsSheet *recordsSheet;
 @property(nonatomic, copy) NSArray<NSLayoutConstraint *> *embeddedConstraints;
 @property(nonatomic, copy) NSArray<NSLayoutConstraint *> *miniConstraints;
 @property(nonatomic) BOOL hasOpened;
@@ -149,6 +154,10 @@ static const CGFloat DemoMiniBarMargin = 6;
                                                 size:17
                                                color:UIColor.labelColor]];
     [stackView addArrangedSubview:[self createSeparator]];
+    self.balanceLabel = [self createLabel:@"钱包余额：-" size:14 color:UIColor.labelColor];
+    [stackView addArrangedSubview:self.balanceLabel];
+    self.betPanel = [[DemoHostBetPanel alloc] init];
+    [stackView addArrangedSubview:self.betPanel];
     self.playingOperationPanel = [self createPlayingOperationPanel];
     self.playingOperationPanel.hidden = YES;
     [stackView addArrangedSubview:self.playingOperationPanel];
@@ -347,10 +356,54 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
- * 打印游戏发送的通用业务事件。
+ * 打印游戏发送的通用业务事件，钱包余额变化时刷新余额。
  */
 - (void)gameSDKDidReceiveEvent:(NSString *)event payloadJSON:(NSString *)payloadJSON gameId:(NSString *)gameId {
     NSLog(@"Demo 收到游戏事件，gameId=%@，event=%@，payload=%@", gameId, event, payloadJSON);
+    if (![event isEqualToString:@"wallet.balance_changed"]) return;
+    NSData *data = [payloadJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *payload = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
+    NSNumber *balanceCent = [payload isKindOfClass:NSDictionary.class] ? payload[@"balanceCent"] : nil;
+    if (![balanceCent isKindOfClass:NSNumber.class]) return;
+    self.balanceLabel.text = [NSString stringWithFormat:@"钱包余额：¥%.2f", balanceCent.longLongValue / 100.0];
+}
+
+/**
+ * 竖屏本局开始下注：由宿主下注面板展示。
+ */
+- (void)gameSDKDidReceiveBetOptions:(CocosGameBetOptions *)options gameId:(NSString *)gameId {
+    [self.betPanel showOptions:options];
+}
+
+/**
+ * 本局下注截止：收起宿主下注面板。
+ */
+- (void)gameSDKDidCloseBetRound:(NSString *)roundId gameId:(NSString *)gameId {
+    [self.betPanel closeRound:roundId];
+}
+
+/**
+ * 下注结果：展示在宿主下注面板。
+ */
+- (void)gameSDKDidReceiveBetResult:(CocosGameBetResult *)result gameId:(NSString *)gameId {
+    [self.betPanel showResult:result];
+}
+
+/**
+ * 竖屏点击记录与规则：由宿主弹窗展示。
+ */
+- (void)gameSDKDidRequestShowRecords:(NSString *)rulesJSON gameId:(NSString *)gameId {
+    [self.recordsSheet dismissViewControllerAnimated:NO completion:nil];
+    DemoHostRecordsSheet *sheet = [[DemoHostRecordsSheet alloc] initWithRulesJSON:rulesJSON];
+    self.recordsSheet = sheet;
+    [[self activePresenter] presentViewController:sheet animated:YES completion:nil];
+}
+
+/**
+ * 记录数据更新：刷新已打开的宿主弹窗。
+ */
+- (void)gameSDKDidUpdateRecords:(NSString *)recordsJSON gameId:(NSString *)gameId {
+    [self.recordsSheet updateRecordsJSON:recordsJSON];
 }
 
 /**

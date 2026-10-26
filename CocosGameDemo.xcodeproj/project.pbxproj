@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		26842830D0C029174428E915 /* DemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FDEF075175A11AB613EE3AA8 /* DemoViewController.m */; };
+		69C7D1A1B8D1AF7AA855A364 /* DemoHostBetPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = EFBF02F064FA9310ACA2BAB6 /* DemoHostBetPanel.m */; };
+		947D1BC3EBA2215DA06BEBB6 /* DemoHostRecordsSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F8188755BBB0B3F4A8F0CBA /* DemoHostRecordsSheet.m */; };
 		30A9AB5E313C1F0404144AAD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0213CF2DFD51DFF8C65B7B /* AppDelegate.m */; };
 		3E120CF436BA38691A0A0AA8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3F4489D816F462F33938E02 /* Foundation.framework */; };
 		548907438E0F50D3F019B0CB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B471D5B79B29A9E3C5590C6B /* main.m */; };
@@ -29,6 +31,10 @@
 		EADB43AD9193E76E07386EFE /* DemoLoginClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = DemoLoginClient.h; sourceTree = "<group>"; };
 		F3F4489D816F462F33938E02 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		FDEF075175A11AB613EE3AA8 /* DemoViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DemoViewController.m; sourceTree = "<group>"; };
+		725B74CC73810AAA4ED876AE /* DemoHostBetPanel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = DemoHostBetPanel.h; sourceTree = "<group>"; };
+		EFBF02F064FA9310ACA2BAB6 /* DemoHostBetPanel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DemoHostBetPanel.m; sourceTree = "<group>"; };
+		8B73A92D185544593D58D5B1 /* DemoHostRecordsSheet.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = DemoHostRecordsSheet.h; sourceTree = "<group>"; };
+		6F8188755BBB0B3F4A8F0CBA /* DemoHostRecordsSheet.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DemoHostRecordsSheet.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +93,10 @@
 				095AA5D4460BC976A7E7FD94 /* DemoLoginClient.m */,
 				B8BA355D12F0E96C54B6C2C8 /* DemoViewController.h */,
 				FDEF075175A11AB613EE3AA8 /* DemoViewController.m */,
+				725B74CC73810AAA4ED876AE /* DemoHostBetPanel.h */,
+				EFBF02F064FA9310ACA2BAB6 /* DemoHostBetPanel.m */,
+				8B73A92D185544593D58D5B1 /* DemoHostRecordsSheet.h */,
+				6F8188755BBB0B3F4A8F0CBA /* DemoHostRecordsSheet.m */,
 				51825FD0254B12A5B955EE10 /* MainViewController.h */,
 				DF8C772F952CF1EB78A13D2F /* MainViewController.m */,
 				B471D5B79B29A9E3C5590C6B /* main.m */,
@@ -168,6 +178,8 @@
 				30A9AB5E313C1F0404144AAD /* AppDelegate.m in Sources */,
 				C5A5A686282E1E99A369E4A3 /* DemoLoginClient.m in Sources */,
 				26842830D0C029174428E915 /* DemoViewController.m in Sources */,
+				69C7D1A1B8D1AF7AA855A364 /* DemoHostBetPanel.m in Sources */,
+				947D1BC3EBA2215DA06BEBB6 /* DemoHostRecordsSheet.m in Sources */,
 				9F86522C730AE15D233E258B /* MainViewController.m in Sources */,
 				548907438E0F50D3F019B0CB /* main.m in Sources */,
 			);
@@ -248,7 +260,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.11;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eath.cocosgamesdkdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -335,7 +347,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.11;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eath.cocosgamesdkdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -373,7 +385,7 @@
 			repositoryURL = "https://github.com/eathwinster-jk/cocos-game-ios-sdk";
 			requirement = {
 				kind = exactVersion;
-				version = 0.1.11;
+				version = 0.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

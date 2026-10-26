@@ -1,6 +1,6 @@
 # Cocos Game iOS Demo
 
-iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条与退出流程。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.1.11。
+iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条、竖屏宿主自绘下注/记录/退出确认流程。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.2.0。
 
 - 接入文档：https://eathwinster-jk.github.io/cocos-game-ios-docs/
 
@@ -29,7 +29,9 @@ xcodebuild -project CocosGameDemo.xcodeproj -scheme CocosGameDemo \
 | --- | --- |
 | `AppDelegate.m` | 创建窗口并初始化 SDK，按 SDK 返回的方向掩码控制旋转 |
 | `MainViewController.m` | 登录页：账号密码登录后创建 `CocosGameSessionConfig` |
-| `DemoViewController.m` | 游戏页：游戏容器、宿主内容示意、迷你条切换、SDK 回调处理 |
+| `DemoViewController.m` | 游戏页：游戏容器、宿主内容示意、钱包余额、迷你条切换、SDK 回调处理 |
+| `DemoHostBetPanel.h/.m` | 宿主自绘竖屏下注面板：注区、筹码、倒计时与下注结果 |
+| `DemoHostRecordsSheet.h/.m` | 宿主自绘竖屏记录与规则弹窗：本桌记录、历史场次、规则、加载更多 |
 | `DemoLoginClient.m` | 测试登录接口，换取 UID、IM UID 与 Token |
 | `DemoConfig.h` | 测试环境地址 |
 
@@ -37,4 +39,6 @@ xcodebuild -project CocosGameDemo.xcodeproj -scheme CocosGameDemo \
 
 - 账号密码登录仅用于 Demo，正式客户端必须复用自身登录体系，UID、Token、Scene Type、Scene ID 由宿主传入 SDK。
 - 迷你条：点击「缩小为迷你条」先把容器约束切换为 362:50 横条，再调用 `setMiniMode:YES backgroundColorHex:`；玩家点击迷你条展开按钮时在 `gameSDKDidRequestExpand` 中恢复约束并调用 `setMiniMode:NO`。
+- 竖屏宿主自绘：Demo 实现了 `gameSDKDidReceiveBetOptions:gameId:` 与 `gameSDKDidRequestShowRecords:gameId:`，竖屏下注与记录弹窗由宿主展示，下注调用 `submitBetWithRoundId:areaCode:amountCent:clientBetNo:`，记录查询调用 `queryRecordsIsHistory:...` / `loadMoreRecordsIsHistory:`；退出确认在 `gameSDKDidRequestExitWithCompletion:` 中由宿主弹框。全屏时三者都由游戏内弹窗展示。不实现这些可选回调时沿用 SDK 自带界面。
+- 钱包余额：在 `gameSDKDidReceiveEvent:payloadJSON:gameId:` 中处理 `wallet.balance_changed` 事件（`balanceCent` 单位分）。
 - `DemoConfig.h` 为测试环境地址，接入正式环境时替换为宿主自己的配置。
