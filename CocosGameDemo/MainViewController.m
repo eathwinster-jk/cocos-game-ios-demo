@@ -83,6 +83,7 @@
         [stack addArrangedSubview:field];
     }
     [stack addArrangedSubview:[self createLoginButton]];
+    [stack addArrangedSubview:[self createGuestButton]];
     [stack addArrangedSubview:[self createMessageLabel]];
     [self.view addSubview:stack];
     [NSLayoutConstraint activateConstraints:@[
@@ -138,6 +139,39 @@
     [self.loadingIndicator.centerYAnchor constraintEqualToAnchor:self.loginButton.centerYAnchor].active = YES;
     [self.loadingIndicator.trailingAnchor constraintEqualToAnchor:self.loginButton.trailingAnchor constant:-16].active = YES;
     return self.loginButton;
+}
+
+/**
+ * 创建游客观战按钮：游客仅限直播间（群聊必须登录），使用 DemoGuestSceneId 作为直播间编号。
+ */
+- (UIButton *)createGuestButton {
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.titleLabel.font = [UIFont systemFontOfSize:16];
+    [button setTitle:@"游客观战（直播间）" forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(openGuestGame) forControlEvents:UIControlEventTouchUpInside];
+    [button.heightAnchor constraintEqualToConstant:44].active = YES;
+    return button;
+}
+
+/**
+ * 以游客身份打开直播间牌桌，设备编号使用 identifierForVendor。
+ */
+- (void)openGuestGame {
+    [self.view endEditing:YES];
+    NSError *error = nil;
+    NSString *version = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"] ?: @"1.0.0";
+    NSString *deviceId = [@"ios-" stringByAppendingString:UIDevice.currentDevice.identifierForVendor.UUIDString ?: NSUUID.UUID.UUIDString];
+    CocosGameSessionConfig *session = [[CocosGameSessionConfig alloc]
+        initGuestWithWebsocketURL:DemoGameWebsocketURL apiBaseURL:DemoGameAPIURL deviceId:deviceId
+                          sceneId:DemoGuestSceneId tableId:0
+                    clientVersion:version deviceType:@"iOS" error:&error];
+    if (!session) {
+        [self showMessage:error.localizedDescription];
+        return;
+    }
+    [self showMessage:@""];
+    DemoViewController *gameViewController = [[DemoViewController alloc] initWithSessionConfig:session];
+    [self.navigationController pushViewController:gameViewController animated:YES];
 }
 
 /**

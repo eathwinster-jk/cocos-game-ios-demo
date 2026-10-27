@@ -360,12 +360,28 @@ static const CGFloat DemoMiniBarMargin = 6;
  */
 - (void)gameSDKDidReceiveEvent:(NSString *)event payloadJSON:(NSString *)payloadJSON gameId:(NSString *)gameId {
     NSLog(@"Demo 收到游戏事件，gameId=%@，event=%@，payload=%@", gameId, event, payloadJSON);
+    if ([event isEqualToString:@"auth.login_required"]) {
+        [self handleLoginRequired];
+        return;
+    }
     if (![event isEqualToString:@"wallet.balance_changed"]) return;
     NSData *data = [payloadJSON dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *payload = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
     NSNumber *balanceCent = [payload isKindOfClass:NSDictionary.class] ? payload[@"balanceCent"] : nil;
     if (![balanceCent isKindOfClass:NSNumber.class]) return;
     self.balanceLabel.text = [NSString stringWithFormat:@"钱包余额：¥%.2f", balanceCent.longLongValue / 100.0];
+}
+
+/**
+ * 游客触发需登录操作：留在游戏页仅提示登录，宿主登录成功后再关闭游客牌桌并以登录会话重新打开。
+ */
+- (void)handleLoginRequired {
+    if (self.presentedViewController) return;
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请先登录"
+                                                                   message:@"登录后可入座、查看记录和全屏观看"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 /**

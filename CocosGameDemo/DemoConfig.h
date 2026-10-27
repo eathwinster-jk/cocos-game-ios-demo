@@ -5,6 +5,8 @@
 
 static NSString *const DemoGameWebsocketURL = @"wss://test.imnono.net/game-ws/ws";
 static NSString *const DemoGameAPIURL = @"https://test.imnono.net/game-lobby";
+// 游客仅支持直播间，固定使用测试直播间号。
+static NSString *const DemoGuestSceneId = @"3947124";
 static NSString *const DemoLoginAPIURL = @"https://test2.kzb001.net/prod-api/login";
 static NSString *const DemoLoginPid = @"4";
 static NSString *const DemoLoginVersion = @"1.120";
