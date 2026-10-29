@@ -360,11 +360,11 @@ static const CGFloat DemoMiniBarMargin = 6;
  */
 - (void)gameSDKDidReceiveEvent:(NSString *)event payloadJSON:(NSString *)payloadJSON gameId:(NSString *)gameId {
     NSLog(@"Demo 收到游戏事件，gameId=%@，event=%@，payload=%@", gameId, event, payloadJSON);
-    if ([event isEqualToString:@"auth.login_required"]) {
+    if ([event isEqualToString:CocosGameEventLoginRequired]) {
         [self handleLoginRequired];
         return;
     }
-    if (![event isEqualToString:@"wallet.balance_changed"]) return;
+    if (![event isEqualToString:CocosGameEventWalletBalanceChanged]) return;
     NSData *data = [payloadJSON dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *payload = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
     NSNumber *balanceCent = [payload isKindOfClass:NSDictionary.class] ? payload[@"balanceCent"] : nil;
