@@ -142,7 +142,7 @@
 }
 
 /**
- * 创建游客观战按钮：游客仅限直播间（群聊必须登录），使用 DemoGuestSceneId 作为直播间编号。
+ * 创建游客观战按钮：使用 DemoGuestSceneId 作为直播间编号，群聊游客可用带 sceneType 的初始化方法。
  */
 - (UIButton *)createGuestButton {
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
