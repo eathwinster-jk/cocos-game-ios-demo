@@ -17,6 +17,8 @@
 @property(nonatomic, copy) NSArray<NSLayoutConstraint *> *embeddedConstraints;
 @property(nonatomic, copy) NSArray<NSLayoutConstraint *> *miniConstraints;
 @property(nonatomic) BOOL hasOpened;
+@property(nonatomic) BOOL isExiting;
+@property(nonatomic) BOOL isBackButtonVisible;
 
 @end
 
@@ -51,6 +53,9 @@ static const CGFloat DemoMiniBarMargin = 6;
     self.navigationController.navigationBarHidden = YES;
     [self buildInterface];
     CocosGameSDK.shared.delegate = self;
+    self.isBackButtonVisible = YES;
+    [CocosGameSDK.shared setBackButtonVisible:YES];
+    [CocosGameSDK.shared setCollapseButtonVisible:YES];
 }
 
 /**
@@ -134,14 +139,6 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
- * 关闭游戏并返回原生主页面；返回箭头由牌桌内绘制并通过 SDK 回调。
- */
-- (void)closeAndReturn {
-    [[CocosGameSDK shared] close];
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-/**
  * 创建游戏下方宿主聊天页面示意。
  */
 - (UIStackView *)createHostContent {
@@ -165,6 +162,7 @@ static const CGFloat DemoMiniBarMargin = 6;
     [stackView addArrangedSubview:[self createLabel:@"众位球星：楼上角球绝杀，这场进球绝杀" size:15 color:UIColor.darkGrayColor]];
     [stackView addArrangedSubview:[self createLabel:@"球界诸葛：太刺激了" size:15 color:UIColor.systemTealColor]];
     [stackView addArrangedSubview:[self createMiniModeButton]];
+    [stackView addArrangedSubview:[self createToggleBackButton]];
     [stackView addArrangedSubview:[self createStateLabel]];
     return stackView;
 }
@@ -276,6 +274,27 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
+ * 创建切换牌桌返回按钮显隐的按钮，演示宿主控制返回按钮。
+ */
+- (UIButton *)createToggleBackButton {
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
+    button.titleLabel.font = [UIFont systemFontOfSize:15];
+    [button setTitle:@"显示/隐藏返回按钮 ›" forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.systemTealColor forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(toggleBackButton) forControlEvents:UIControlEventTouchUpInside];
+    return button;
+}
+
+/**
+ * 切换牌桌返回按钮显隐。
+ */
+- (void)toggleBackButton {
+    self.isBackButtonVisible = !self.isBackButtonVisible;
+    [CocosGameSDK.shared setBackButtonVisible:self.isBackButtonVisible];
+}
+
+/**
  * 进入迷你条。
  */
 - (void)enterMiniMode {
@@ -313,6 +332,13 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
+ * 玩家点击竖屏收起按钮：缩成迷你条。
+ */
+- (void)gameSDKDidRequestCollapse {
+    [self applyMiniMode:YES];
+}
+
+/**
  * 创建 SDK 状态标签。
  */
 - (UILabel *)createStateLabel {
@@ -336,10 +362,31 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
- * 牌桌返回箭头请求离开游戏页。
+ * 牌桌点击返回，由宿主决定离开方式：exitGame 离座后关闭，close 保留座位直接关闭；本局进行中只能保留座位离开。关闭后返回上一页。
  */
-- (void)gameSDKDidRequestBack {
-    [self closeAndReturn];
+- (void)gameSDKDidClickBack:(CocosGameBackInfo *)info {
+    NSLog(@"Demo 牌桌点击返回，info=%@", info);
+    if (self.presentedViewController) return;
+    NSString *message = @"确定要离开游戏吗？";
+    if (info.isPlaying) message = info.isInGame ? @"本局进行中，可保留座位离开。" : @"你已在座，离开前是否离座？";
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"离开游戏？"
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    if (info.isPlaying) {
+        [alert addAction:[UIAlertAction actionWithTitle:@"保留座位离开" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+            self.isExiting = YES;
+            [CocosGameSDK.shared close];
+        }]];
+    }
+    if (!info.isInGame) {
+        NSString *title = info.isPlaying ? @"离座并离开" : @"离开";
+        [alert addAction:[UIAlertAction actionWithTitle:title style:UIAlertActionStyleDestructive handler:^(__unused UIAlertAction *action) {
+            self.isExiting = YES;
+            [CocosGameSDK.shared exitGame];
+        }]];
+    }
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 /**
@@ -473,6 +520,9 @@ static const CGFloat DemoMiniBarMargin = 6;
  */
 - (void)gameSDKDidChangeState:(CocosGameSDKState)state {
     self.stateLabel.text = [NSString stringWithFormat:@"状态：%ld", (long)state];
+    if (state != CocosGameSDKStateClosed || !self.isExiting) return;
+    self.isExiting = NO;
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 /**
