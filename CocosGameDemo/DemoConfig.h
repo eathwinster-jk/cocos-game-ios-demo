@@ -9,6 +9,10 @@ static NSString *const DemoGameAPIURL = @"https://test.imnono.net/game-lobby";
 static NSString *const DemoGuestSceneId = @"3947124";
 // 游戏模块热更新版本清单地址（0.7.0 起 SDK 不内置游戏，必须配置）。
 static NSString *const DemoModuleCatalogURL = @"https://cocos-game-modules.pages.dev/ios/catalog.json";
+// 版本清单签名公钥（EC P-256，X.509 DER 的 Base64），SDK 用它校验清单未被篡改。
+static NSString *const DemoModuleCatalogPublicKey = @"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErTdV8F92qHswr8ysK3qdPAlCSlOGceiYNZu02CJbHkGYFCbrUg/+TNJDPQNt+nSyS6oM9KIkh7o3+t2DcsyQuA==";
+// 启动后预下载的游戏模块，用户进入游戏时无需等待下载。
+static NSString *const DemoPreloadGameId = @"niuniu";
 static NSString *const DemoLoginAPIURL = @"https://test2.kzb001.net/prod-api/login";
 static NSString *const DemoLoginPid = @"4";
 static NSString *const DemoLoginVersion = @"1.120";

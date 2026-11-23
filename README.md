@@ -2,7 +2,7 @@
 
 iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条、竖屏宿主自绘下注/记录/退出确认流程、游客观战。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.7.2（产品 `CocosGameSDK` 与 `CocosGameHotUpdate`）。
 
-0.7.0 起 SDK 不再内置游戏，必须接入游戏模块热更新：应用启动时调用 `[CocosGameHotUpdate installWithCatalogURL:]`，清单地址为 `https://cocos-game-modules.pages.dev/ios/catalog.json`；首次打开游戏时下载模块（约 2 MB），新版本在后台下载、下次打开生效。本 Demo 见 `AppDelegate.m` 与 `DemoConfig.h`。
+0.7.0 起 SDK 不再内置游戏，必须接入游戏模块热更新：应用启动时调用 `[CocosGameHotUpdate installWithCatalogURL:catalogPublicKey:]`，清单地址为 `https://cocos-game-modules.pages.dev/ios/catalog.json`，清单签名公钥为 `MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErTdV8F92qHswr8ysK3qdPAlCSlOGceiYNZu02CJbHkGYFCbrUg/+TNJDPQNt+nSyS6oM9KIkh7o3+t2DcsyQuA==`（校验清单未被篡改，不通过时回调错误码 7 且不安装）；建议启动后调用 `preloadGameId:` 预下载，用户进入游戏时无需等待；首次打开游戏时下载模块（约 2 MB），新版本在后台下载、下次打开生效。本 Demo 见 `AppDelegate.m` 与 `DemoConfig.h`。
 
 iOS 27 起系统会终止未采用 UIScene 生命周期的 App，宿主须在 `SceneDelegate` 中创建窗口并调用 `initializeWithWindow:`，本 Demo 见 `SceneDelegate.m`。
 
@@ -31,7 +31,7 @@ xcodebuild -project CocosGameDemo.xcodeproj -scheme CocosGameDemo \
 
 | 文件 | 说明 |
 | --- | --- |
-| `AppDelegate.m` | 开启游戏模块热更新，指定场景代理，按 SDK 返回的方向掩码控制旋转 |
+| `AppDelegate.m` | 开启游戏模块热更新（校验清单签名）并预下载牛牛，指定场景代理，按 SDK 返回的方向掩码控制旋转 |
 | `SceneDelegate.m` | 场景连接时创建窗口并初始化 SDK |
 | `MainViewController.m` | 登录页：账号密码登录后创建 `CocosGameSessionConfig`；游客入口用 `initGuestWithWebsocketURL:apiBaseURL:deviceId:sceneId:...` 创建游客会话 |
 | `DemoViewController.m` | 游戏页：游戏容器、宿主内容示意、钱包余额、迷你条切换、SDK 回调处理 |

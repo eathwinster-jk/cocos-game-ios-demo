@@ -14,11 +14,17 @@
 @implementation AppDelegate
 
 /**
- * 开启游戏模块热更新（首次打开游戏时下载模块）；窗口与 SDK 初始化在 SceneDelegate 中完成。
+ * 开启游戏模块热更新（校验清单签名）并预下载游戏模块；窗口与 SDK 初始化在 SceneDelegate 中完成。
  */
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    self.hotUpdate = [CocosGameHotUpdate installWithCatalogURL:[NSURL URLWithString:DemoModuleCatalogURL]];
+    self.hotUpdate = [CocosGameHotUpdate installWithCatalogURL:[NSURL URLWithString:DemoModuleCatalogURL]
+                                              catalogPublicKey:DemoModuleCatalogPublicKey];
+    if (!self.hotUpdate) {
+        NSLog(@"CocosGameDemo 热更新开启失败：清单公钥格式错误");
+        return YES;
+    }
     self.hotUpdate.delegate = self;
+    [self.hotUpdate preloadGameId:DemoPreloadGameId];
     return YES;
 }
 
