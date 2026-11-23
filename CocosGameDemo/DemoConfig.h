@@ -7,6 +7,8 @@ static NSString *const DemoGameWebsocketURL = @"wss://test.imnono.net/game-ws/ws
 static NSString *const DemoGameAPIURL = @"https://test.imnono.net/game-lobby";
 // 游客观战示例固定使用测试直播间号（群聊游客同样支持）。
 static NSString *const DemoGuestSceneId = @"3947124";
+// 游戏模块热更新版本清单地址（0.7.0 起 SDK 不内置游戏，必须配置）。
+static NSString *const DemoModuleCatalogURL = @"https://cocos-game-modules.pages.dev/ios/catalog.json";
 static NSString *const DemoLoginAPIURL = @"https://test2.kzb001.net/prod-api/login";
 static NSString *const DemoLoginPid = @"4";
 static NSString *const DemoLoginVersion = @"1.120";
