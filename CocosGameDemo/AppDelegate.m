@@ -5,7 +5,7 @@
 #import <CocosGameSDK/CocosGameSDK.h>
 
 #import "DemoConfig.h"
-#import "MainViewController.h"
+#import "SceneDelegate.h"
 
 @interface AppDelegate () <CocosGameHotUpdateDelegate>
 @property(nonatomic, strong) CocosGameHotUpdate *hotUpdate;
@@ -14,17 +14,24 @@
 @implementation AppDelegate
 
 /**
- * 创建宿主窗口，初始化游戏 SDK 并开启游戏模块热更新（首次打开游戏时下载模块）。
+ * 开启游戏模块热更新（首次打开游戏时下载模块）；窗口与 SDK 初始化在 SceneDelegate 中完成。
  */
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    MainViewController *mainViewController = [[MainViewController alloc] init];
-    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:mainViewController];
-    [[CocosGameSDK shared] initializeWithWindow:self.window launchOptions:launchOptions];
     self.hotUpdate = [CocosGameHotUpdate installWithCatalogURL:[NSURL URLWithString:DemoModuleCatalogURL]];
     self.hotUpdate.delegate = self;
-    [self.window makeKeyAndVisible];
     return YES;
+}
+
+/**
+ * 为新场景指定 SceneDelegate（iOS 27 起宿主必须采用 UIScene 生命周期）。
+ */
+- (UISceneConfiguration *)application:(UIApplication *)application
+    configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
+                                   options:(UISceneConnectionOptions *)options {
+    UISceneConfiguration *configuration = [[UISceneConfiguration alloc] initWithName:@"Default"
+                                                                         sessionRole:connectingSceneSession.role];
+    configuration.delegateClass = SceneDelegate.class;
+    return configuration;
 }
 
 /**

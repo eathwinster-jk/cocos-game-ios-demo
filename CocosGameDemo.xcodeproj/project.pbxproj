@@ -13,6 +13,7 @@
 		30A9AB5E313C1F0404144AAD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0213CF2DFD51DFF8C65B7B /* AppDelegate.m */; };
 		3E120CF436BA38691A0A0AA8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3F4489D816F462F33938E02 /* Foundation.framework */; };
 		548907438E0F50D3F019B0CB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B471D5B79B29A9E3C5590C6B /* main.m */; };
+		5CE7A1B2C3D4E5F60718293A /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CE7A1B2C3D4E5F60718293C /* SceneDelegate.m */; };
 		9F86522C730AE15D233E258B /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DF8C772F952CF1EB78A13D2F /* MainViewController.m */; };
 		C2467FFFC5855F7D240BE77B /* CocosGameSDK in Frameworks */ = {isa = PBXBuildFile; productRef = A5E30792D4ADBF25C71D3E44 /* CocosGameSDK */; };
 		7B3C1E2A9D4F60A1B2C3D4E5 /* CocosGameHotUpdate in Frameworks */ = {isa = PBXBuildFile; productRef = 8C4D2F3B0E5A71B2C3D4E5F6 /* CocosGameHotUpdate */; };
@@ -27,6 +28,8 @@
 		B471D5B79B29A9E3C5590C6B /* main.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B8BA355D12F0E96C54B6C2C8 /* DemoViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = DemoViewController.h; sourceTree = "<group>"; };
 		DA0213CF2DFD51DFF8C65B7B /* AppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		5CE7A1B2C3D4E5F60718293B /* SceneDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		5CE7A1B2C3D4E5F60718293C /* SceneDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		DF8C772F952CF1EB78A13D2F /* MainViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		E1C85FFF4F536762E72F5ABE /* AppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		EADB43AD9193E76E07386EFE /* DemoLoginClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = DemoLoginClient.h; sourceTree = "<group>"; };
@@ -101,6 +104,8 @@
 				6F8188755BBB0B3F4A8F0CBA /* DemoHostRecordsSheet.m */,
 				51825FD0254B12A5B955EE10 /* MainViewController.h */,
 				DF8C772F952CF1EB78A13D2F /* MainViewController.m */,
+				5CE7A1B2C3D4E5F60718293B /* SceneDelegate.h */,
+				5CE7A1B2C3D4E5F60718293C /* SceneDelegate.m */,
 				B471D5B79B29A9E3C5590C6B /* main.m */,
 			);
 			name = CocosGameDemo;
@@ -184,6 +189,7 @@
 				69C7D1A1B8D1AF7AA855A364 /* DemoHostBetPanel.m in Sources */,
 				947D1BC3EBA2215DA06BEBB6 /* DemoHostRecordsSheet.m in Sources */,
 				9F86522C730AE15D233E258B /* MainViewController.m in Sources */,
+				5CE7A1B2C3D4E5F60718293A /* SceneDelegate.m in Sources */,
 				548907438E0F50D3F019B0CB /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,6 +264,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "CocosGame Demo";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -344,6 +351,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "CocosGame Demo";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -386,7 +394,7 @@
 			repositoryURL = "https://github.com/eathwinster-jk/cocos-game-ios-sdk";
 			requirement = {
 				kind = exactVersion;
-				version = 0.7.0;
+				version = 0.7.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
