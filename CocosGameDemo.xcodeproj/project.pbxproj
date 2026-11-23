@@ -394,7 +394,7 @@
 			repositoryURL = "https://github.com/eathwinster-jk/cocos-game-ios-sdk";
 			requirement = {
 				kind = exactVersion;
-				version = 0.7.1;
+				version = 0.7.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

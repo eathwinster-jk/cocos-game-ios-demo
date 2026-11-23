@@ -1,6 +1,6 @@
 # Cocos Game iOS Demo
 
-iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条、竖屏宿主自绘下注/记录/退出确认流程、游客观战。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.7.1（产品 `CocosGameSDK` 与 `CocosGameHotUpdate`）。
+iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条、竖屏宿主自绘下注/记录/退出确认流程、游客观战。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.7.2（产品 `CocosGameSDK` 与 `CocosGameHotUpdate`）。
 
 0.7.0 起 SDK 不再内置游戏，必须接入游戏模块热更新：应用启动时调用 `[CocosGameHotUpdate installWithCatalogURL:]`，清单地址为 `https://cocos-game-modules.pages.dev/ios/catalog.json`；首次打开游戏时下载模块（约 2 MB），新版本在后台下载、下次打开生效。本 Demo 见 `AppDelegate.m` 与 `DemoConfig.h`。
 
