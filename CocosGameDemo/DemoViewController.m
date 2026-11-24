@@ -2,18 +2,13 @@
 #import "DemoViewController.h"
 
 #import <CocosGameSDK/CocosGameSDK.h>
-#import "DemoHostBetPanel.h"
-#import "DemoHostRecordsSheet.h"
 
 @interface DemoViewController () <CocosGameSDKDelegate>
 
 @property(nonatomic, strong) CocosGameSessionConfig *sessionConfig;
 @property(nonatomic, retain) UILabel *stateLabel;
 @property(nonatomic, retain) UIView *gameContainer;
-@property(nonatomic, retain) UIView *playingOperationPanel;
-@property(nonatomic, strong) DemoHostBetPanel *betPanel;
 @property(nonatomic, strong) UILabel *balanceLabel;
-@property(nonatomic, weak) DemoHostRecordsSheet *recordsSheet;
 @property(nonatomic, copy) NSArray<NSLayoutConstraint *> *embeddedConstraints;
 @property(nonatomic, copy) NSArray<NSLayoutConstraint *> *miniConstraints;
 @property(nonatomic) BOOL hasOpened;
@@ -153,11 +148,6 @@ static const CGFloat DemoMiniBarMargin = 6;
     [stackView addArrangedSubview:[self createSeparator]];
     self.balanceLabel = [self createLabel:@"钱包余额：-" size:14 color:UIColor.labelColor];
     [stackView addArrangedSubview:self.balanceLabel];
-    self.betPanel = [[DemoHostBetPanel alloc] init];
-    [stackView addArrangedSubview:self.betPanel];
-    self.playingOperationPanel = [self createPlayingOperationPanel];
-    self.playingOperationPanel.hidden = YES;
-    [stackView addArrangedSubview:self.playingOperationPanel];
     [stackView addArrangedSubview:[self createLabel:@"大力出奇迹：真假 是不是啊" size:15 color:UIColor.darkGrayColor]];
     [stackView addArrangedSubview:[self createLabel:@"众位球星：楼上角球绝杀，这场进球绝杀" size:15 color:UIColor.darkGrayColor]];
     [stackView addArrangedSubview:[self createLabel:@"球界诸葛：太刺激了" size:15 color:UIColor.systemTealColor]];
@@ -199,43 +189,6 @@ static const CGFloat DemoMiniBarMargin = 6;
     [label.widthAnchor constraintGreaterThanOrEqualToConstant:48].active = YES;
     [label.heightAnchor constraintEqualToConstant:27].active = YES;
     return label;
-}
-
-/**
- * 创建已加入状态的选择方式卡片。
- */
-- (UIStackView *)createPlayingOperationPanel {
-    UIStackView *panel = [[UIStackView alloc] init];
-    panel.axis = UILayoutConstraintAxisVertical;
-    panel.spacing = 10;
-    panel.layoutMargins = UIEdgeInsetsMake(10, 10, 10, 10);
-    panel.layoutMarginsRelativeArrangement = YES;
-    panel.backgroundColor = UIColor.secondarySystemBackgroundColor;
-    panel.layer.cornerRadius = 12;
-    [panel addArrangedSubview:[self createLabel:@"请选择方式" size:14 color:UIColor.darkGrayColor]];
-    UIStackView *buttons = [[UIStackView alloc] init];
-    buttons.axis = UILayoutConstraintAxisHorizontal;
-    buttons.spacing = 6;
-    buttons.distribution = UIStackViewDistributionFillEqually;
-    [buttons addArrangedSubview:[self createOperationButton:@"弃牌"]];
-    [buttons addArrangedSubview:[self createOperationButton:@"跟注¥100"]];
-    [buttons addArrangedSubview:[self createOperationButton:@"加注"]];
-    [panel addArrangedSubview:buttons];
-    [panel.heightAnchor constraintEqualToConstant:104].active = YES;
-    return panel;
-}
-
-/**
- * 创建选择方式按钮。
- */
-- (UIButton *)createOperationButton:(NSString *)title {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    button.backgroundColor = UIColor.systemBackgroundColor;
-    button.layer.cornerRadius = 9;
-    button.titleLabel.font = [UIFont boldSystemFontOfSize:16];
-    [button setTitle:title forState:UIControlStateNormal];
-    [button setTitleColor:UIColor.darkTextColor forState:UIControlStateNormal];
-    return button;
 }
 
 /**
@@ -437,44 +390,6 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
- * 竖屏本局开始下注：由宿主下注面板展示。
- */
-- (void)gameSDKDidReceiveBetOptions:(CocosGameBetOptions *)options gameId:(NSString *)gameId {
-    [self.betPanel showOptions:options];
-}
-
-/**
- * 本局下注截止：收起宿主下注面板。
- */
-- (void)gameSDKDidCloseBetRound:(NSString *)roundId gameId:(NSString *)gameId {
-    [self.betPanel closeRound:roundId];
-}
-
-/**
- * 下注结果：展示在宿主下注面板。
- */
-- (void)gameSDKDidReceiveBetResult:(CocosGameBetResult *)result gameId:(NSString *)gameId {
-    [self.betPanel showResult:result];
-}
-
-/**
- * 竖屏点击记录与规则：由宿主弹窗展示。
- */
-- (void)gameSDKDidRequestShowRecords:(NSString *)rulesJSON gameId:(NSString *)gameId {
-    [self.recordsSheet dismissViewControllerAnimated:NO completion:nil];
-    DemoHostRecordsSheet *sheet = [[DemoHostRecordsSheet alloc] initWithRulesJSON:rulesJSON];
-    self.recordsSheet = sheet;
-    [[self activePresenter] presentViewController:sheet animated:YES completion:nil];
-}
-
-/**
- * 记录数据更新：刷新已打开的宿主弹窗。
- */
-- (void)gameSDKDidUpdateRecords:(NSString *)recordsJSON gameId:(NSString *)gameId {
-    [self.recordsSheet updateRecordsJSON:recordsJSON];
-}
-
-/**
  * 竖屏游戏提示由宿主展示：载荷 {"message":"…","level":"error|info|success"}，示例在页面底部显示 2 秒后淡出。
  */
 - (void)showGameToast:(NSDictionary *)payload {
@@ -497,26 +412,10 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
- * 获取当前可见的宿主展示控制器。
- */
-- (UIViewController *)activePresenter {
-    UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
-    UIViewController *presenter = window.rootViewController ?: self;
-    if ([presenter isKindOfClass:UINavigationController.class]) {
-        return ((UINavigationController *)presenter).visibleViewController ?: presenter;
-    }
-    return presenter;
-}
-
-/**
- * 根据游戏参与状态切换选择方式卡片。
+ * 记录游戏参与状态；下注由 SDK 热更新自绘弹窗处理，Demo 不改动宿主布局。
  */
 - (void)gameSDKDidChangePlayingState:(BOOL)isPlaying {
-    if (!self.playingOperationPanel) return;
-    [UIView animateWithDuration:0.2 animations:^{
-        self.playingOperationPanel.hidden = !isPlaying;
-        [self.view layoutIfNeeded];
-    }];
+    NSLog(@"[CocosGameDemo] 游戏参与状态：%@", isPlaying ? @"参与中" : @"未参与");
 }
 
 /**
