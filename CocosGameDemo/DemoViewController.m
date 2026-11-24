@@ -403,7 +403,7 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
- * 打印游戏发送的通用业务事件，钱包余额变化时刷新余额。
+ * 打印游戏发送的通用业务事件：竖屏提示由宿主展示，钱包余额变化时刷新余额。
  */
 - (void)gameSDKDidReceiveEvent:(NSString *)event payloadJSON:(NSString *)payloadJSON gameId:(NSString *)gameId {
     NSLog(@"Demo 收到游戏事件，gameId=%@，event=%@，payload=%@", gameId, event, payloadJSON);
@@ -411,9 +411,14 @@ static const CGFloat DemoMiniBarMargin = 6;
         [self handleLoginRequired];
         return;
     }
-    if (![event isEqualToString:CocosGameEventWalletBalanceChanged]) return;
     NSData *data = [payloadJSON dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *payload = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
+    id json = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
+    NSDictionary *payload = [json isKindOfClass:NSDictionary.class] ? json : nil;
+    if ([event isEqualToString:CocosGameEventGameToast]) {
+        [self showGameToast:payload];
+        return;
+    }
+    if (![event isEqualToString:CocosGameEventWalletBalanceChanged]) return;
     NSNumber *balanceCent = [payload isKindOfClass:NSDictionary.class] ? payload[@"balanceCent"] : nil;
     if (![balanceCent isKindOfClass:NSNumber.class]) return;
     self.balanceLabel.text = [NSString stringWithFormat:@"钱包余额：¥%.2f", balanceCent.longLongValue / 100.0];
@@ -470,26 +475,25 @@ static const CGFloat DemoMiniBarMargin = 6;
 }
 
 /**
- * 由宿主展示退出游戏确认框。
+ * 竖屏游戏提示由宿主展示：载荷 {"message":"…","level":"error|info|success"}，示例在页面底部显示 2 秒后淡出。
  */
-- (void)gameSDKDidRequestExitWithCompletion:(void (^)(BOOL))completion {
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:@"退出游戏？"
-                         message:@"当前游戏正在进行中，离开后游戏将结束并结算。"
-                  preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *leaveAction = [UIAlertAction actionWithTitle:@"离开"
-        style:UIAlertActionStyleDestructive
-      handler:^(__unused UIAlertAction *action) {
-        completion(YES);
-    }];
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消"
-        style:UIAlertActionStyleCancel
-      handler:^(__unused UIAlertAction *action) {
-        completion(NO);
-    }];
-    [alert addAction:leaveAction];
-    [alert addAction:cancelAction];
-    [[self activePresenter] presentViewController:alert animated:YES completion:nil];
+- (void)showGameToast:(NSDictionary *)payload {
+    NSString *message = [payload[@"message"] isKindOfClass:NSString.class] ? payload[@"message"] : @"";
+    if (message.length == 0) return;
+    UILabel *label = [[UILabel alloc] init];
+    label.text = message;
+    label.numberOfLines = 0;
+    label.textAlignment = NSTextAlignmentCenter;
+    label.textColor = UIColor.whiteColor;
+    label.font = [UIFont systemFontOfSize:15];
+    label.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75];
+    label.layer.cornerRadius = 8;
+    label.clipsToBounds = YES;
+    CGSize size = [label sizeThatFits:CGSizeMake(CGRectGetWidth(self.view.bounds) - 80, CGFLOAT_MAX)];
+    label.frame = CGRectMake(0, 0, size.width + 32, size.height + 20);
+    label.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetHeight(self.view.bounds) - 140);
+    [self.view addSubview:label];
+    [UIView animateWithDuration:0.3 delay:2 options:0 animations:^{ label.alpha = 0; } completion:^(__unused BOOL finished) { [label removeFromSuperview]; }];
 }
 
 /**

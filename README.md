@@ -1,6 +1,6 @@
 # Cocos Game iOS Demo
 
-iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条、竖屏宿主自绘下注/记录/退出确认流程、游客观战。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.7.2（产品 `CocosGameSDK` 与 `CocosGameHotUpdate`）。
+iOS 宿主接入 `CocosGameSDK` 的示例工程，演示登录、创建会话、在宿主页面容器中打开牛牛、全屏切换、迷你条、竖屏宿主自绘下注/记录、宿主展示竖屏提示、游客观战。工程只包含宿主示例代码，SDK 通过 Swift Package Manager 远程依赖 [cocos-game-ios-sdk](https://github.com/eathwinster-jk/cocos-game-ios-sdk) 0.7.3（产品 `CocosGameSDK` 与 `CocosGameHotUpdate`）。
 
 0.7.0 起 SDK 不再内置游戏，必须接入游戏模块热更新：应用启动时调用 `[CocosGameHotUpdate installWithCatalogURL:catalogPublicKey:]`，清单地址为 `https://cocos-game-modules.pages.dev/ios/catalog.json`，清单签名公钥为 `MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErTdV8F92qHswr8ysK3qdPAlCSlOGceiYNZu02CJbHkGYFCbrUg/+TNJDPQNt+nSyS6oM9KIkh7o3+t2DcsyQuA==`（校验清单未被篡改，不通过时回调错误码 7 且不安装）；建议启动后调用 `preloadGameId:` 预下载，用户进入游戏时无需等待；首次打开游戏时下载模块（约 2 MB），新版本在后台下载、下次打开生效。本 Demo 见 `AppDelegate.m` 与 `DemoConfig.h`。
 
@@ -45,7 +45,9 @@ xcodebuild -project CocosGameDemo.xcodeproj -scheme CocosGameDemo \
 - 账号密码登录仅用于 Demo，正式客户端必须复用自身登录体系，UID、Token、Scene Type、Scene ID 由宿主传入 SDK。
 - 迷你条：点击「缩小为迷你条」先把容器约束切换为 362:50 横条，再调用 `setMiniMode:YES backgroundColorHex:`；玩家点击迷你条展开按钮时在 `gameSDKDidRequestExpand` 中恢复约束并调用 `setMiniMode:NO`。
 - 返回与收起（SDK 0.6.0）：牌桌点击返回时回调 `gameSDKDidClickBack:`，`CocosGameBackInfo` 带 `isPlaying`、`isInGame`、`canLeave` 等牌局参数，Demo 据此弹框：调用 `exitGame` 离座后关闭，调用 `close` 保留座位关闭，本局未结束（`isInGame`）时只能保留座位离开；关闭完成后返回上一页。「显示/隐藏返回按钮」演示 `setBackButtonVisible:`；Demo 打开了竖屏收起按钮（`setCollapseButtonVisible:YES`），点击后在 `gameSDKDidRequestCollapse` 中切换为迷你条。
-- 竖屏宿主自绘：Demo 实现了 `gameSDKDidReceiveBetOptions:gameId:` 与 `gameSDKDidRequestShowRecords:gameId:`，竖屏下注与记录弹窗由宿主展示，下注调用 `submitBetWithRoundId:areaCode:amountCent:clientBetNo:`，记录查询调用 `queryRecordsIsHistory:...` / `loadMoreRecordsIsHistory:`；退出确认在 `gameSDKDidRequestExitWithCompletion:` 中由宿主弹框。全屏时三者都由游戏内弹窗展示。不实现这些可选回调时沿用 SDK 自带界面。
+- 竖屏宿主自绘：Demo 实现了 `gameSDKDidReceiveBetOptions:gameId:` 与 `gameSDKDidRequestShowRecords:gameId:`，竖屏下注与记录弹窗由宿主展示，下注调用 `submitBetWithRoundId:areaCode:amountCent:clientBetNo:`，记录查询调用 `queryRecordsIsHistory:...` / `loadMoreRecordsIsHistory:`。全屏时两者都由游戏内弹窗展示。不实现这些可选回调时，竖屏下注与记录改为游戏随热更新下发的自绘弹窗。
+- 离座确认（SDK 0.7.3）：竖屏由 SDK 展示热更新自绘弹窗，全屏与迷你条由游戏内确认，确认后只离座转观战；`gameSDKDidRequestExitWithCompletion:` 已废弃、不再回调，迷你条离座图标也不再回调宿主。
 - 钱包余额：在 `gameSDKDidReceiveEvent:payloadJSON:gameId:` 中处理 `wallet.balance_changed` 事件（`balanceCent` 单位分）。
+- 竖屏提示（SDK 0.7.3）：游戏内不再弹竖屏提示，全部通过 `CocosGameEventGameToast` 事件发给宿主，载荷 `{"message":"…","level":"error|info|success"}`；Demo 在 `showGameToast:` 中显示 2 秒后淡出。全屏横屏仍由游戏内展示。`setGameToastVisible:` 已废弃。
 - 游客观战：直播间与 IM 群均支持游客（群聊游客 SDK 0.2.4 起，使用带 `sceneType` 的 `initGuestWithWebsocketURL:apiBaseURL:deviceId:sceneType:…` 初始化），以设备标识 `deviceId` 代替 UID/Token，只能观战、不显示余额。入座、查看记录、全屏时 SDK 发出 `auth.login_required` 事件（`payloadJSON` 中 `action` 为 `join` / `records` / `fullscreen`），游戏内不弹任何提示，由宿主提示登录；事件名可直接用 SDK 0.2.2 起提供的常量 `CocosGameEventLoginRequired`、`CocosGameEventWalletBalanceChanged`，`action` 取值对应 `CocosGameLoginActionJoin` / `CocosGameLoginActionRecords` / `CocosGameLoginActionFullscreen`。Demo 留在游戏页只弹提示框；正式接入可拉起登录页，登录成功后再 `[CocosGameSDK.shared close]` 并用登录态重新打开，不要在事件回调里直接关闭牌桌。
 - `DemoConfig.h` 为测试环境地址，接入正式环境时替换为宿主自己的配置。
